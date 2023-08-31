@@ -1,0 +1,54 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="reports_list">
+          <field name="name">reports list</field>
+          <field name="model">reports.reports</field>
+          <field name="arch" type="xml">
+          <tree>
+            <field name="name"/>
+            <field name="phone"/>
+            <field name="address"/>
+            <field name="city"/>
+            <field name="qualification"/>
+
+          </tree>
+      </field>
+    </record>
+<!--      form view-->
+      <record model="ir.ui.view" id="reports_form">
+          <field name="name">reports form</field>
+          <field name="model">reports.reports</field>
+          <field name="type">form</field>
+          <field name="arch" type="xml">
+        <form string="reports Form">
+          <sheet>
+              <group>
+                      <field name="name"/>
+                      <field name="phone"/>
+                      <field name="address"/>
+                      <field name="city"/>
+                      <field name="qualification"/>
+              </group>
+           </sheet>
+         </form>
+      </field>
+    </record>
+
+
+
+      <menuitem name=" My Reports" id="callcenter_menu_reports" parent="callcenter_menu_root"/>
+
+     <!--     action -->
+
+      <record model="ir.actions.act_window" id="callcenter_action_window_reports">
+          <field name="name">Reports</field>
+          <field name="res_model">reports.reports</field>
+          <field name="view_mode">tree,form</field>
+    </record>
+
+
+      <menuitem name=" Rapports" id="reports_menu" parent="callcenter_menu_reports"
+              action="callcenter_action_window_reports" groups="callcenter.group_manager"/>
+  </data>
+</odoo>

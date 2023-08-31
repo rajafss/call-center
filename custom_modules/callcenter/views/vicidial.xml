@@ -1,0 +1,49 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--    <record model="ir.ui.view" id="reports_list">-->
+<!--          <field name="name">vicidial list</field>-->
+<!--          <field name="model">reports.reports</field>-->
+<!--          <field name="arch" type="xml">-->
+<!--          <tree>-->
+<!--            <field name="name"/>-->
+<!--            <field name="phone"/>-->
+<!--            <field name="address"/>-->
+<!--            <field name="city"/>-->
+<!--            <field name="qualification"/>-->
+
+<!--          </tree>-->
+<!--      </field>-->
+<!--    </record>-->
+<!--      form view-->
+      <record model="ir.ui.view" id="vicidial_form">
+          <field name="name">vicidial form</field>
+          <field name="model">vicidial.vicidial</field>
+          <field name="type">form</field>
+          <field name="arch" type="xml">
+        <form string="Embedded Webpage" version="7.0" edit="false" create="false">
+          <center>
+             <iframe marginheight="0" marginwidth="0"
+                     frameborder = "0" src="http://192.168.0.200/vicidial/admin.php?ADD=100" width="100%" height="1000"/>
+           </center>
+         </form>
+      </field>
+    </record>
+
+
+
+      <menuitem name=" Vicidial" id="callcenter_menu_vicidial" parent="callcenter_menu_root"/>
+
+     <!--     action -->
+
+      <record model="ir.actions.act_window" id="callcenter_action_window_vicidial">
+          <field name="name">Reports</field>
+          <field name="res_model">vicidial.vicidial</field>
+          <field name="view_mode">form</field>
+    </record>
+
+
+      <menuitem name=" Vicidial" id="vicidial_menu" parent="callcenter_menu_vicidial"
+              action="callcenter_action_window_vicidial" groups="callcenter.group_manager"/>
+  </data>
+</odoo>

@@ -1,0 +1,203 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="callcenter.list">
+          <field name="name">callcenter list</field>
+          <field name="model">callcenter.callcenter</field>
+          <field name="arch" type="xml">
+        <tree>
+            <header>
+
+                <button string="Set to approve"
+                        type="object" name="to_approve_progressbar" class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}" groups="callcenter.group_user"/>
+                <button string="Set to confirmed"
+                        type="object" name="confirmed_progressbar" class="oe_highlight"
+                        attrs="{'invisible': [('state','=','confirmed')]}" groups="callcenter.group_manager"/>
+                <button string="not confirmed" type="object"
+                        name="not_confirmed_progressbar"
+                        attrs="{'invisible': [('state','=','not confirmed')]}" groups="callcenter.group_manager"/>
+	        </header>
+            <field name="agent_id"/>
+            <field name="name"/>
+            <field name="phone"/>
+            <field name="nom_voyant"/>
+            <field name="num_voyant"/>
+            <field name="duree_appell"/>
+            <field name="qualification"/>
+            <field name="state"/>
+
+<!--            <field name="date"/>-->
+            <field name="description"/>
+        </tree>
+      </field>
+    </record>
+
+<!--      kanban view-->
+
+      <record model="ir.ui.view" id="view_order_kanban">
+            <field name="name">callcenter kanban</field>
+            <field name="model">callcenter.callcenter</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="agent_id"/>
+                    <field name="name"/>
+                    <field name="phone"/>
+                    <field name="nom_voyant"/>
+                    <field name="num_voyant"/>
+                    <field name="duree_appell"/>
+                    <field name="qualification"/>
+                    <field name="state"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_content oe_kanban_global_click">
+                                <div>
+                                    <strong class="o_kanban_record_title"><span><field name="name"/></span></strong>
+                                </div>
+                                <div>
+                                    <span class="o_kanban_record_subtitle"><field name="phone"/></span>
+                                </div>
+                                <div>
+                                  <field name="qualification"  options="{'color_field': 'red'}"/>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="qualification" widget="priority"/>
+                                        <div class="o_kanban_inline_block">
+                                            <field name="activity_ids" widget="kanban_activity"/>
+                                        </div>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="agent_id" widget="many2one_avatar_user"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+      </record>
+<!--      form view-->
+      <record model="ir.ui.view" id="callcenter_form">
+          <field name="name">callcenter form</field>
+          <field name="model">callcenter.callcenter</field>
+          <field name="type">form</field>
+          <field name="arch" type="xml">
+        <form string="CallCenter Form">
+            <header>
+
+                <button string="Set to approve"
+                        type="object" name="to_approve_progressbar" class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}" groups="callcenter.group_user"/>
+                <button string="Set to confirmed"
+                        type="object" name="confirmed_progressbar" class="oe_highlight"
+                        attrs="{'invisible': [('state','=','confirmed')]}" groups="callcenter.group_manager"/>
+                <button string="not confirmed" type="object"
+                        name="not_confirmed_progressbar"
+                        attrs="{'invisible': [('state','=','not confirmed')]}" groups="callcenter.group_manager"/>
+                <field name="state" widget="statusbar"/>
+	        </header>
+          <sheet>
+              <group>
+                  <group>
+                      <field name="agent_id" attrs="{'readonly': [('state','=','confirmed'),('is_manager','=', False)]}"/>
+                      <field name="is_manager"  invisible="1"/>
+                      <field name="partner_id" options="{'no_create': True}" on_change="_onChage_partner_id(partner_id)" attrs="{'readonly': [('state','=','confirmed'),('is_manager','=', False)]}"/>
+                  </group>
+                  <group>
+<!--                      <field name="date"/>-->
+                      <field name="qualification" attrs="{'readonly': [('state','=','confirmed'),('is_manager','=', False)]}"/>
+                      <field name="name" attrs="{'readonly': [('state','=','confirmed'),('is_manager','=', False)]}"/>
+                      <field name="phone" attrs="{'readonly': [('state','=','confirmed'),('is_manager','=', False)]}"/>
+                      <field name="duree_appell" attrs="{'readonly': [('state','=','confirmed'),('is_manager','=', False)]}"/>
+                       <field name="nom_voyant" attrs="{'readonly': [('state','=','confirmed'),('is_manager','=', False)]}"/>
+                      <field name="num_voyant" attrs="{'readonly': [('state','=','confirmed'),('is_manager','=', False)]}"/>
+                  </group>
+              </group>
+             <notebook>
+               <page string="Commentaire Firm">
+                   <field name="description" attrs="{'readonly': [('state','=','confirmed'),('is_manager','=', False)]}"/>
+               </page>
+
+             </notebook>
+           </sheet>
+            <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                    </div>
+         </form>
+      </field>
+    </record>
+
+    <!-- Top menu item -->
+
+    <menuitem name="Agents" id="callcenter_menu_root" web_icon="callcenter,static/description/icon/call-center.png"/>
+
+    <!-- menu categories -->
+
+    <menuitem name=" My Clients" id="callcenter_menu_client" parent="callcenter_menu_root" sequence="1"/>
+
+     <!--     action draft client-->
+
+      <record model="ir.actions.act_window" id="callcenter_action_window_draft">
+          <field name="name">Draft Clients</field>
+          <field name="res_model">callcenter.callcenter</field>
+          <field name="view_mode">kanban,tree,form</field>
+          <field  name="domain" >[('state', '=', 'draft')]</field>
+    </record>
+
+      <menuitem name="Drafs Client" id="draft_clients_menu" parent="callcenter_menu_client"
+              action="callcenter_action_window_draft" groups="callcenter.group_user"/>
+
+<!--      action all clients-->
+
+      <record model="ir.actions.act_window" id="callcenter_action_window_All_clients">
+          <field name="name">All Clients</field>
+          <field name="res_model">callcenter.callcenter</field>
+          <field name="view_mode">kanban,tree,form</field>
+    </record>
+      <menuitem name="All Clients" id="all_clients_menu" parent="callcenter_menu_client"
+              action="callcenter_action_window_All_clients" groups="callcenter.group_user"/>
+
+      <!--      action to approve request client-->
+
+       <menuitem name="Agent Requests" id="agent_requests_menu" parent="callcenter_menu_root" sequence="2" />
+
+      <record model="ir.actions.act_window" id="callcenter_action_window_to_approve_requests">
+          <field name="name">To approve request</field>
+          <field name="res_model">callcenter.callcenter</field>
+          <field name="view_mode">kanban,tree,form</field>
+          <field name="domain" >[('state', '=', 'to approve')]</field>
+      </record>
+      <menuitem name="Client To Approve" id="client_to_approve_menu" parent="agent_requests_menu"
+              action="callcenter_action_window_to_approve_requests" groups="callcenter.group_manager"/>
+
+       <!--      action confirmed clients-->
+
+     <record model="ir.actions.act_window" id="callcenter_action_window_confirmed_clients">
+      <field name="name">Confirmed Clients</field>
+      <field name="res_model">callcenter.callcenter</field>
+      <field name="view_mode">kanban,tree,form</field>
+      <field name="domain" >[('state', '=', 'confirmed')]</field>
+    </record>
+    <menuitem name="Confirmed Clients" id="confirmed_clients_menu" parent="agent_requests_menu"
+              action="callcenter_action_window_confirmed_clients" groups="callcenter.group_manager"/>
+
+      <!--      action not confirmed client-->
+
+      <record model="ir.actions.act_window" id="callcenter_action_window_not_confirmed_clients">
+          <field name="name">Not Confirmed Clients</field>
+          <field name="res_model">callcenter.callcenter</field>
+          <field name="view_mode">kanban,tree,form</field>
+         <field name="domain" >[('state', '=', 'not confirmed')]</field>
+    </record>
+
+      <menuitem name="Not Confirmed Clients" id="not_confirmed_menu" parent="agent_requests_menu"
+              action="callcenter_action_window_not_confirmed_clients" groups="callcenter.group_manager"/>
+
+
+
+
+  </data>
+</odoo>

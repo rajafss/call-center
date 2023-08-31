@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<!--      access right   add 2 groups group_manager group_user-->
+
+        <record model="ir.module.category" id="module_call_center">
+            <field name="name">Call Center</field>
+            <field name="description">Halps you handle your call center details</field>
+            <field name="sequence">1</field>
+
+        </record>
+
+        <record model="res.groups" id="group_manager">
+            <field name="name">Access Manager</field>
+            <field name="category_id" ref="module_call_center"/>
+
+        </record>
+
+        <record model="res.groups" id="group_user">
+            <field name="name">Access User</field>
+            <field name="category_id" ref="module_call_center"/>
+        </record>
+
+    <record model="res.groups" id="group_super_user">
+            <field name="name">Access super User</field>
+            <field name="category_id" ref="module_call_center"/>
+        </record>
+
+    <record model="res.groups" id="group_super_manager">
+            <field name="name">Access super manager</field>
+            <field name="category_id" ref="module_call_center"/>
+        </record>
+
+
+
+<!--      rules users-->
+  <record id = "record_user_read" model = "ir.rule">
+       <field name = "name"> User can only see his / her history </field>
+       <field name = "model_id" ref = "callcenter.model_callcenter_callcenter" />
+       <field name = "groups" eval = "[(4, ref ('callcenter.group_user'))]" />
+       <field name = "perm_read" eval = "True" />
+        <field name="domain_force">['|',('agent_id','=',user.id),('agent_id','=',False), ('state', '!=', 'draft')]</field>
+    </record>
+
+       <record id = "record_user" model = "ir.rule">
+       <field name = "name"> User can only see his / her history </field>
+       <field name = "model_id" ref = "callcenter.model_callcenter_callcenter" />
+       <field name = "groups" eval = "[(4, ref ('callcenter.group_user'))]" />
+       <field name = "perm_read" eval = "True" />
+       <field name = "perm_write" eval = "True" />
+       <field name = "perm_create" eval = "True" />
+       <field name = "perm_unlink" eval = "False" />
+        <field name="domain_force">['|',('agent_id','=',user.id),('agent_id','=',False), ('state', '=', 'draft')]</field>
+    </record>
+
+    <!--      rules of manager-->
+
+    <record id = "record_manager" model = "ir.rule">
+       <field name = "name"> manager can manager call center </field>
+       <field name = "model_id" ref = "callcenter.model_callcenter_callcenter" />
+       <field name = "groups" eval = "[(4, ref ('callcenter.group_manager'))]" />
+       <field name = "perm_read" eval = "True" />
+       <field name = "perm_write" eval = "True" />
+       <field name = "perm_create" eval = "True" />
+       <field name = "perm_unlink" eval = "True" />
+        <field name = "domain_force">[(1,'=',1)]</field>
+
+    </record>
+
+
+</odoo>
